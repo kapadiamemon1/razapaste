@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}{{ paste.title or 'Untitled' }} - Raza Paste{% endblock %}
+
+{% block content %}
+<div class="view-container">
+    <!-- Back Button -->
+    <div class="back-section">
+        <a href="{{ url_for('index') }}" class="back-btn">
+            <i class="fas fa-arrow-left"></i>
+            Back
+        </a>
+    </div>
+
+    <!-- Paste Header -->
+    <div class="paste-header">
+        <h1 class="paste-title">{{ paste.title or 'Untitled Paste' }}</h1>
+        
+        <div class="paste-meta-grid">
+            <div class="meta-item">
+                <i class="fas fa-eye"></i>
+                <span>{{ paste.view_count }} views</span>
+            </div>
+            <div class="meta-item">
+                <i class="fas fa-calendar"></i>
+                <span>{{ paste.created_at.strftime('%m/%d/%Y, %I:%M %p') }}</span>
+            </div>
+            <div class="meta-item">
+                <i class="fas fa-code"></i>
+                <span>{{ paste.syntax }}</span>
+            </div>
+            {% if paste.expires_at %}
+            <div class="meta-item">
+                <i class="fas fa-clock"></i>
+                <span>Expires: {{ paste.expires_at.strftime('%m/%d/%Y, %I:%M %p') }}</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Share URL Section -->
+    <div class="share-section">
+        <h3 class="section-title">
+            <i class="fas fa-share-alt"></i>
+            Share URL
+        </h3>
+        <div class="url-box">
+            <code class="url-text">{{ url_for('view_paste', paste_id=paste.id, _external=True) }}</code>
+            <button class="copy-btn" onclick="copyToClipboard('{{ url_for('view_paste', paste_id=paste.id, _external=True) }}')">
+                <i class="fas fa-copy"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Content Section -->
+    <div class="content-section">
+        <h3 class="section-title">
+            <i class="fas fa-file-code"></i>
+            Content
+        </h3>
+        <div class="code-container">
+            <div class="code-header">
+                <span class="syntax-badge">{{ paste.syntax|upper }}</span>
+                <button class="copy-btn" onclick="copyToClipboard(`{{ paste.content | replace('`', '\\`') | replace('\n', '\\n') | replace('\r', '\\r') }}`)">
+                    <i class="fas fa-copy"></i>
+                    Copy
+                </button>
+            </div>
+            <pre class="code-content"><code>{{ paste.content }}</code></pre>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+        <a href="{{ url_for('raw_paste', paste_id=paste.id) }}" class="action-btn" target="_blank">
+            <i class="fas fa-file-alt"></i>
+            View Raw
+        </a>
+        <a href="{{ url_for('download_paste', paste_id=paste.id) }}" class="action-btn">
+            <i class="fas fa-download"></i>
+            Download
+        </a>
+        <a href="{{ url_for('index') }}" class="action-btn primary">
+            <i class="fas fa-plus"></i>
+            New Paste
+        </a>
+    </div>
+</div>
+{% endblock %}

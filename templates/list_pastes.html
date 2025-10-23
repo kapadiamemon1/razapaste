@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Recent Pastes - Raza Paste{% endblock %}
+
+{% block content %}
+<div class="list-container">
+    <div class="page-header">
+        <h1>
+            <i class="fas fa-history"></i>
+            {% if session.user_id %}
+            My Recent Pastes
+            {% else %}
+            Recent Pastes
+            {% endif %}
+        </h1>
+        <p>
+            {% if session.user_id %}
+            Browse your recently created code snippets and text
+            {% else %}
+            Sign in to view and manage your pastes
+            {% endif %}
+        </p>
+    </div>
+
+    {% if pastes %}
+    <div class="pastes-list">
+        {% for paste in pastes %}
+        <div class="paste-item {% if not paste.is_public %}private-paste{% endif %}">
+            <div class="paste-item-header">
+                <h3 class="paste-item-title">
+                    <a href="{{ url_for('view_paste', paste_id=paste.id) }}">
+                        {{ paste.title or 'Untitled Paste' }}
+                    </a>
+                    {% if not paste.is_public %}
+                    <span class="privacy-badge">
+                        <i class="fas fa-lock"></i>
+                        Private
+                    </span>
+                    {% endif %}
+                </h3>
+                <div class="paste-item-actions">
+                    <a href="{{ url_for('raw_paste', paste_id=paste.id) }}" class="icon-btn" title="View Raw">
+                        <i class="fas fa-file-alt"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="paste-item-preview">
+                <pre><code>{{ paste.content[:100] }}{% if paste.content|length > 100 %}...{% endif %}</code></pre>
+            </div>
+            
+            <div class="paste-item-meta">
+                <span class="meta-tag">
+                    <i class="fas fa-eye"></i>
+                    {{ paste.view_count }}
+                </span>
+                <span class="meta-tag">
+                    <i class="fas fa-code"></i>
+                    {{ paste.syntax }}
+                </span>
+                <span class="meta-tag">
+                    <i class="fas fa-calendar"></i>
+                    {{ paste.created_at.strftime('%m/%d/%Y') }}
+                </span>
+                {% if paste.expires_at %}
+                <span class="meta-tag expires">
+                    <i class="fas fa-clock"></i>
+                    {{ paste.expires_at.strftime('%m/%d') }}
+                </span>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">
+            {% if session.user_id %}
+            <i class="fas fa-file-code"></i>
+            {% else %}
+            <i class="fas fa-sign-in-alt"></i>
+            {% endif %}
+        </div>
+        <h3>
+            {% if session.user_id %}
+            No Pastes Yet
+            {% else %}
+            Sign In Required
+            {% endif %}
+        </h3>
+        <p>
+            {% if session.user_id %}
+            Create your first paste to get started!
+            {% else %}
+            Please sign in to view your pastes
+            {% endif %}
+        </p>
+        {% if session.user_id %}
+        <a href="{{ url_for('index') }}" class="create-btn">
+            <i class="fas fa-plus"></i>
+            Create New Paste
+        </a>
+        {% else %}
+        <a href="{{ url_for('login') }}" class="create-btn">
+            <i class="fas fa-sign-in-alt"></i>
+            Sign In
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

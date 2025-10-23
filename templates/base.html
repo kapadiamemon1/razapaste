@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Raza Paste - Share Text and Code Snippets Instantly{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-code"></i>
+                    <span>Raza Paste</span>
+                </div>
+                <nav class="nav">
+                    <a href="{{ url_for('index') }}" class="nav-link">
+                        <i class="fas fa-plus"></i>
+                        New Paste
+                    </a>
+                    <a href="{{ url_for('list_pastes') }}" class="nav-link">
+                        <i class="fas fa-history"></i>
+                        {% if session.user_id %}My Pastes{% else %}Recent{% endif %}
+                    </a>
+                    {% if session.user_id %}
+                    <a href="{{ url_for('my_pastes') }}" class="nav-link">
+                        <i class="fas fa-folder"></i>
+                        All Pastes ({{ user_pastes_count }})
+                    </a>
+                    <a href="{{ url_for('logout') }}" class="nav-link">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout ({{ session.username }})
+                    </a>
+                    {% else %}
+                    <a href="{{ url_for('login') }}" class="nav-link">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Login
+                    </a>
+                    <a href="{{ url_for('signup') }}" class="nav-link">
+                        <i class="fas fa-user-plus"></i>
+                        Sign Up
+                    </a>
+                    {% endif %}
+                    <div class="stats">
+                        <i class="fas fa-chart-bar"></i>
+                        {{ total_pastes }} Pastes
+                    </div>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            <i class="fas fa-{% if category == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Main Content -->
+        <main class="main">
+            {% block content %}{% endblock %}
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <p>&copy; 2024 Raza Paste. Share text and code snippets instantly.</p>
+                {% if session.user_id %}
+                <p>Logged in as <strong>{{ session.username }}</strong></p>
+                {% endif %}
+            </div>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
